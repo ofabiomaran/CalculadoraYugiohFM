@@ -1,0 +1,119 @@
+<img src="https://cdn2.steamgriddb.com/logo_thumb/0599212ac5b4670c30619bac376c189c.png" width="300" height="auto" alt="Exemplo">
+<br>
+<br>
+
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Calculadora de Cartas</title>
+
+<style>
+
+body{
+font-family: Arial;
+background-image: url("https://i.ibb.co/7J4rdC9t/EWITy1-SWAAAJCKF.jpg");
+background-size: cover;
+background-position: center;
+background-repeat: no-repeat;
+background-attachment: fixed;
+color:white;
+text-align:center;
+padding:40px;
+}
+
+.container{
+max-width:600px;
+margin:auto;
+background:rgba(0,0,0,0.75);
+padding:30px;
+border-radius:10px;
+}
+
+button{
+padding:10px 20px;
+font-size:16px;
+margin-top:10px;
+cursor:pointer;
+}
+
+input{
+padding:10px;
+font-size:16px;
+width:120px;
+text-align:center;
+}
+
+.pack{
+margin-top:20px;
+}
+
+.carta{
+background:#444;
+padding:10px;
+margin:5px;
+border-radius:6px;
+display:inline-block;
+min-width:100px;
+}
+
+footer{
+margin-top:40px;
+font-size:14px;
+}
+
+</style>
+</head>
+
+<body>
+
+<div class="container">
+
+<h1><img src="https://i.ibb.co/v4YYH36p/yfmcb.png"> Baseado em 2048 possibilidades</h1>
+
+<h2><img src="https://i.ibb.co/n8mb2PTL/yfmdeck.png"> Calculadora de % Drop</h2>
+
+<p>Digite a quantidade de resultados possíveis:</p>
+
+<input type="number" id="quantidade">
+<br>
+<button onclick="calcularDrop()">Calcular Chance</button>
+
+<h3 id="resultado"></h3>
+
+<hr>
+
+<div class="pack" id="pack"></div>
+Desenvolvido Por: Fabio Maran
+</div>
+
+<script>
+
+function calcularDrop(){
+
+let quantidade = document.getElementById("quantidade").value;
+let total = 2048;
+
+let chance = (quantidade / total) * 100;
+
+document.getElementById("resultado").innerText =
+"Chance de Drop: " + chance.toFixed(4) + "%";
+
+}
+
+function gerarRaridade(){
+
+let raridade = Math.random() * 100;
+
+if(raridade <= 69.25) return "Comum";
+if(raridade <= 90.03) return "Rara";
+if(raridade <= 96.96) return "Épica";
+
+return "Lendária";
+
+}
+
+</script>
+
+</body>
+</html>
