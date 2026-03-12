@@ -1,115 +1,279 @@
-<img src="https://cdn2.steamgriddb.com/logo_thumb/0599212ac5b4670c30619bac376c189c.png" width="300" height="auto" alt="Exemplo">
-<br>
-<br>
-
 <!DOCTYPE html>
 <html lang="pt-BR">
+<br>
+<br>
+<img src="https://i.ibb.co/1f47SKQ2/f012aa4d-be87-4daf-a73c-111d50cc189a-1.png" width="300" height="auto" alt="Exemplo">
+<br>
+<br>
 <head>
+
 <meta charset="UTF-8">
-<title>Calculadora de Cartas</title>
+<title>Yu-Gi-Oh ForbiddenDrop Calculator</title>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
 
 body{
-font-family: Arial;
-background-image: url("https://i.ibb.co/7J4rdC9t/EWITy1-SWAAAJCKF.jpg");
-background-size: cover;
-background-position: center;
-background-repeat: no-repeat;
-background-attachment: fixed;
-color:white;
+font-family:Verdana;
+color:#FFD700;
 text-align:center;
-padding:40px;
+margin:0;
+
+/* IMAGEM DE FUNDO */
+
+background:url("https://i.ibb.co/7J4rdC9t/EWITy1-SWAAAJCKF.jpg");
+background-size:cover;
+background-position:center;
+background-attachment:fixed;
 }
 
-.container{
-max-width:600px;
+
+
+.panel{
+width:650px;
 margin:auto;
-background:rgba(0,0,0,0.75);
-padding:30px;
+background:rgba(10,10,10,0.95);
+border:3px solid #FFD700;
 border-radius:10px;
+padding:25px;
+box-shadow:0 0 25px gold;
+}
+
+h1{
+color:#FFD700;
+}
+
+input{
+width:150px;
+padding:7px;
+margin:6px;
+text-align:center;
 }
 
 button{
 padding:10px 20px;
-font-size:16px;
-margin-top:10px;
+margin:10px;
+background:#FFD700;
+border:none;
+font-weight:bold;
 cursor:pointer;
 }
 
-input{
-padding:10px;
-font-size:16px;
-width:120px;
-text-align:center;
+button:hover{
+background:#fff000;
 }
 
-.pack{
+.result{
 margin-top:20px;
+line-height:1.7;
+color:white;
 }
 
-.carta{
-background:#444;
-padding:10px;
-margin:5px;
-border-radius:6px;
-display:inline-block;
-min-width:100px;
+canvas{
+margin-top:25px;
+background:white;
+border-radius:5px;
+}
+
+.slider{
+width:300px;
 }
 
 footer{
-margin-top:40px;
+position:fixed;
+bottom:0;
+width:100%;
+background:rgba(0,0,0,0.9);
+color:#FFD700;
+padding:10px;
 font-size:14px;
+border-top:2px solid gold;
 }
 
 </style>
+
 </head>
 
 <body>
 
-<div class="container">
+<div class="overlay">
 
-<h1><img src="https://i.ibb.co/v4YYH36p/yfmcb.png"> Baseado em 2048 possibilidades</h1>
+<div class="panel">
 
-<h2><img src="https://i.ibb.co/n8mb2PTL/yfmdeck.png"> Calculadora de % Drop</h2>
+<h1>Yu-Gi-Oh Drop Calculator</h1>
 
-<p>Digite a quantidade de resultados possíveis:</p>
+<h3>Configuração do Sistema</h3>
 
-<input type="number" id="quantidade">
+Possibilidades totais<br>
+<input id="possibilidades" type="number" value="2048">
+
 <br>
-<button onclick="calcularDrop()">Calcular Chance</button>
 
-<h3 id="resultado"></h3>
+Total de cartas<br>
+<input id="cartasTotal" type="number" value="722">
 
-<hr>
+<br><br>
 
-<div class="pack" id="pack"></div>
-Desenvolvido Por: Fabio Maran
+<h3>Cartas desejadas</h3>
+
+<input id="cartasDesejadas" type="range" min="1" max="722" value="1"
+class="slider" oninput="updateCarta(this.value)">
+
+<br>
+
+<span id="valorCarta">1</span> cartas
+
+<br><br>
+
+Quantidade de duelos<br>
+<input id="duelos" type="number" value="100">
+
+<br>
+
+Simulações RNG<br>
+<input id="simulacoes" type="number" value="10000">
+
+<br><br>
+
+<button onclick="calcular()">Calcular</button>
+<button onclick="simular()">Simular RNG</button>
+
+<div class="result" id="resultado"></div>
+
+<canvas id="grafico"></canvas>
+
 </div>
+
+</div>
+
+<footer>
+Desenvolvido por: Fabio Maran
+</footer>
 
 <script>
 
-function calcularDrop(){
+let chart
 
-let quantidade = document.getElementById("quantidade").value;
-let total = 2048;
+function updateCarta(v){
+document.getElementById("valorCarta").innerText=v
+}
 
-let chance = (quantidade / total) * 100;
+function calcular(){
 
-document.getElementById("resultado").innerText =
-"Chance de Drop: " + chance.toFixed(4) + "%";
+let possibilidades=parseFloat(document.getElementById("possibilidades").value)
+let cartas=parseFloat(document.getElementById("cartasDesejadas").value)
+let duelos=parseFloat(document.getElementById("duelos").value)
+
+let p=cartas/possibilidades
+
+let chance=1-Math.pow((1-p),duelos)
+
+function duelosNecessarios(prob){
+return Math.ceil(Math.log(1-prob)/Math.log(1-p))
+}
+
+let d25=duelosNecessarios(0.25)
+let d50=duelosNecessarios(0.50)
+let d75=duelosNecessarios(0.75)
+let d90=duelosNecessarios(0.90)
+
+document.getElementById("resultado").innerHTML=`
+
+Chance em 1 duelo: ${(p*100).toFixed(6)} %
+
+<br><br>
+
+Chance de dropar pelo menos 1 carta:
+
+<h2>${(chance*100).toFixed(6)}%</h2>
+
+<hr>
+
+25% → ${d25} duelos<br>
+50% → ${d50} duelos<br>
+75% → ${d75} duelos<br>
+90% → ${d90} duelos
+
+`
+
+gerarGrafico(p,duelos)
 
 }
 
-function gerarRaridade(){
+function gerarGrafico(p,duelos){
 
-let raridade = Math.random() * 100;
+let labels=[]
+let data=[]
 
-if(raridade <= 69.25) return "Comum";
-if(raridade <= 90.03) return "Rara";
-if(raridade <= 96.96) return "Épica";
+for(let i=1;i<=duelos;i++){
 
-return "Lendária";
+let c=1-Math.pow((1-p),i)
+
+labels.push(i)
+data.push(c*100)
+
+}
+
+if(chart) chart.destroy()
+
+let ctx=document.getElementById("grafico")
+
+chart=new Chart(ctx,{
+
+type:'line',
+
+data:{
+labels:labels,
+datasets:[{
+label:'Probabilidade (%)',
+data:data,
+borderColor:'gold',
+fill:false
+}]
+}
+
+})
+
+}
+
+function simular(){
+
+let possibilidades=parseFloat(document.getElementById("possibilidades").value)
+let cartas=parseFloat(document.getElementById("cartasDesejadas").value)
+let duelos=parseFloat(document.getElementById("duelos").value)
+let simulacoes=parseFloat(document.getElementById("simulacoes").value)
+
+let p=cartas/possibilidades
+
+let sucesso=0
+
+for(let i=0;i<simulacoes;i++){
+
+for(let j=0;j<duelos;j++){
+
+if(Math.random()<p){
+
+sucesso++
+break
+
+}
+
+}
+
+}
+
+let chance=(sucesso/simulacoes)*100
+
+document.getElementById("resultado").innerHTML+=`
+
+<hr>
+
+Simulação RNG:
+
+<b>${chance.toFixed(4)}%</b> sucesso em ${simulacoes} testes
+
+`
 
 }
 
