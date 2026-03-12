@@ -1,93 +1,140 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<br>
-<br>
-<img src="https://i.ibb.co/1f47SKQ2/f012aa4d-be87-4daf-a73c-111d50cc189a-1.png" width="300" height="auto" alt="Exemplo">
-<br>
-<br>
+
 <head>
 
 <meta charset="UTF-8">
-<title>Yu-Gi-Oh ForbiddenDrop Calculator</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<title>Forbidden Memories RNG Calculator</title>
 
 <style>
 
+*{box-sizing:border-box;}
+
 body{
 font-family:Verdana;
+background:black;
+background-image:url("https://i.ibb.co/4hTHKYC/EWITy1-Ssa-SWAAAJCKF.jpg");
+background-size:cover;
+background-position:center;
+background-repeat:no-repeat;
 color:#FFD700;
 text-align:center;
 margin:0;
-
-/* IMAGEM DE FUNDO */
-
-background:url("https://i.ibb.co/7J4rdC9t/EWITy1-SWAAAJCKF.jpg");
-background-size:cover;
-background-position:center;
-background-attachment:fixed;
+padding:15px;
 }
 
+/* MENU STYLE */
 
-
-.panel{
-width:650px;
+.container{
+max-width:650px;
+width:95%;
 margin:auto;
-background:rgba(10,10,10,0.95);
-border:3px solid #FFD700;
-border-radius:10px;
 padding:25px;
-box-shadow:0 0 25px gold;
+background:rgba(0,0,0,0.85);
+border:3px solid gold;
+border-radius:10px;
+box-shadow:0 0 20px gold;
 }
 
-h1{
-color:#FFD700;
+/* LOGO */
+
+.logo{
+width:100%;
+max-width:320px;
 }
+
+/* INPUT */
 
 input{
-width:150px;
-padding:7px;
-margin:6px;
+width:100%;
+padding:12px;
+margin:10px 0;
 text-align:center;
+font-size:16px;
+border-radius:6px;
+border:none;
+background:#111;
+color:white;
+border:1px solid gold;
 }
 
+/* BOTÃO */
+
 button{
-padding:10px 20px;
-margin:10px;
-background:#FFD700;
+width:100%;
+padding:14px;
+background:linear-gradient(#FFD700,#C9A000);
 border:none;
 font-weight:bold;
+font-size:16px;
+border-radius:6px;
 cursor:pointer;
+margin-top:10px;
 }
 
 button:hover{
-background:#fff000;
+background:linear-gradient(#FFF000,#FFD700);
 }
+
+/* RESULTADO */
 
 .result{
 margin-top:20px;
-line-height:1.7;
+line-height:1.8;
 color:white;
 }
 
-canvas{
-margin-top:25px;
-background:white;
-border-radius:5px;
+/* TABELA */
+
+.table-container{
+overflow-x:auto;
 }
 
-.slider{
-width:300px;
+.table{
+margin-top:20px;
+width:100%;
+border-collapse:collapse;
 }
+
+.table td,.table th{
+border:1px solid gold;
+padding:8px;
+}
+
+.table th{
+background:#111;
+}
+
+/* CALCULADORA DE OBJETIVO */
+
+.target{
+margin-top:25px;
+background:#111;
+padding:15px;
+border-radius:8px;
+border:1px solid gold;
+color:white;
+}
+
+/* GUIA */
+
+.guide{
+margin-top:30px;
+text-align:left;
+background:#111;
+padding:15px;
+border-radius:8px;
+border:1px solid gold;
+}
+
+/* FOOTER */
 
 footer{
-position:fixed;
-bottom:0;
-width:100%;
+margin-top:30px;
 background:rgba(0,0,0,0.9);
-color:#FFD700;
 padding:10px;
-font-size:14px;
 border-top:2px solid gold;
 }
 
@@ -97,51 +144,63 @@ border-top:2px solid gold;
 
 <body>
 
-<div class="overlay">
+<div class="container">
 
-<div class="panel">
+<img class="logo" src="https://i.ibb.co/1f47SKQ2/f012aa4d-be87-4daf-a73c-111d50cc189a-1.png">
 
-<h1>Yu-Gi-Oh Drop Calculator</h1>
+<h3>Forbidden Memories RNG Calculator</h3>
 
-<h3>Configuração do Sistema</h3>
+Slots da carta no pool (ex: Pegasus = 64)
 
-Possibilidades totais<br>
-<input id="possibilidades" type="number" value="2048">
+<input id="slots" type="number" value="64">
 
-<br>
+Total de duelos
 
-Total de cartas<br>
-<input id="cartasTotal" type="number" value="722">
-
-<br><br>
-
-<h3>Cartas desejadas</h3>
-
-<input id="cartasDesejadas" type="range" min="1" max="722" value="1"
-class="slider" oninput="updateCarta(this.value)">
-
-<br>
-
-<span id="valorCarta">1</span> cartas
-
-<br><br>
-
-Quantidade de duelos<br>
 <input id="duelos" type="number" value="100">
 
-<br>
+Tempo extra antes de finalizar duelo (segundos)
 
-Simulações RNG<br>
-<input id="simulacoes" type="number" value="10000">
-
-<br><br>
+<input id="tempo" type="number" value="0">
 
 <button onclick="calcular()">Calcular</button>
-<button onclick="simular()">Simular RNG</button>
 
 <div class="result" id="resultado"></div>
 
-<canvas id="grafico"></canvas>
+<div class="table-container">
+<div id="tabela"></div>
+</div>
+
+<div class="target" id="alvo"></div>
+
+<div class="guide">
+
+<h3>Guia de Uso da Calculadora</h3>
+
+<b>1. Slots da carta</b><br>
+Número de posições que a carta ocupa dentro dos 2048 valores RNG.
+
+<br><br>
+
+<b>2. Repetições</b><br>
+Algumas cartas podem aparecer mais de uma vez no pool.
+
+<br><br>
+
+<b>3. RNG do jogo</b><br>
+
+60 frames = 1 segundo.
+
+<br><br>
+
+Cada segundo altera 60 estados RNG possíveis.
+
+<br><br>
+
+<b>Exemplo</b>
+
+<br>
+
+Atrasar 3 segundos = 180 estados RNG novos.
 
 </div>
 
@@ -153,127 +212,66 @@ Desenvolvido por: Fabio Maran
 
 <script>
 
-let chart
+function duelosNecessarios(p, alvo){
 
-function updateCarta(v){
-document.getElementById("valorCarta").innerText=v
+return Math.ceil(Math.log(1-alvo)/Math.log(1-p))
+
 }
 
 function calcular(){
 
-let possibilidades=parseFloat(document.getElementById("possibilidades").value)
-let cartas=parseFloat(document.getElementById("cartasDesejadas").value)
+let slots=parseFloat(document.getElementById("slots").value)
 let duelos=parseFloat(document.getElementById("duelos").value)
+let tempo=parseFloat(document.getElementById("tempo").value)
 
-let p=cartas/possibilidades
+let frames=tempo*60
+
+let tabela="<table class='table'>"
+tabela+="<tr><th>Repetições</th><th>Chance por duelo</th><th>Chance após "+duelos+" duelos</th></tr>"
+
+let alvoHTML="<h3>Duelos necessários para atingir chance de drop</h3>"
+
+for(let r=1;r<=3;r++){
+
+let p=(slots*r)/2048
+if(p>1)p=1
 
 let chance=1-Math.pow((1-p),duelos)
 
-function duelosNecessarios(prob){
-return Math.ceil(Math.log(1-prob)/Math.log(1-p))
-}
-
-let d25=duelosNecessarios(0.25)
-let d50=duelosNecessarios(0.50)
-let d75=duelosNecessarios(0.75)
-let d90=duelosNecessarios(0.90)
-
-document.getElementById("resultado").innerHTML=`
-
-Chance em 1 duelo: ${(p*100).toFixed(6)} %
-
-<br><br>
-
-Chance de dropar pelo menos 1 carta:
-
-<h2>${(chance*100).toFixed(6)}%</h2>
-
-<hr>
-
-25% → ${d25} duelos<br>
-50% → ${d50} duelos<br>
-75% → ${d75} duelos<br>
-90% → ${d90} duelos
-
+tabela+=`
+<tr>
+<td>${r}x</td>
+<td>${(p*100).toFixed(5)}%</td>
+<td>${(chance*100).toFixed(4)}%</td>
+</tr>
 `
 
-gerarGrafico(p,duelos)
+let d50=duelosNecessarios(p,0.5)
+let d75=duelosNecessarios(p,0.75)
+let d90=duelosNecessarios(p,0.9)
 
-}
-
-function gerarGrafico(p,duelos){
-
-let labels=[]
-let data=[]
-
-for(let i=1;i<=duelos;i++){
-
-let c=1-Math.pow((1-p),i)
-
-labels.push(i)
-data.push(c*100)
-
-}
-
-if(chart) chart.destroy()
-
-let ctx=document.getElementById("grafico")
-
-chart=new Chart(ctx,{
-
-type:'line',
-
-data:{
-labels:labels,
-datasets:[{
-label:'Probabilidade (%)',
-data:data,
-borderColor:'gold',
-fill:false
-}]
-}
-
-})
-
-}
-
-function simular(){
-
-let possibilidades=parseFloat(document.getElementById("possibilidades").value)
-let cartas=parseFloat(document.getElementById("cartasDesejadas").value)
-let duelos=parseFloat(document.getElementById("duelos").value)
-let simulacoes=parseFloat(document.getElementById("simulacoes").value)
-
-let p=cartas/possibilidades
-
-let sucesso=0
-
-for(let i=0;i<simulacoes;i++){
-
-for(let j=0;j<duelos;j++){
-
-if(Math.random()<p){
-
-sucesso++
-break
-
-}
-
-}
-
-}
-
-let chance=(sucesso/simulacoes)*100
-
-document.getElementById("resultado").innerHTML+=`
-
-<hr>
-
-Simulação RNG:
-
-<b>${chance.toFixed(4)}%</b> sucesso em ${simulacoes} testes
-
+alvoHTML+=`
+<b>${r} repetição:</b><br>
+50% chance → ${d50} duelos<br>
+75% chance → ${d75} duelos<br>
+90% chance → ${d90} duelos<br><br>
 `
+
+}
+
+tabela+="</table>"
+
+let resultado=`
+Frames alterados pelo tempo:
+<b>${frames}</b>
+<br>
+Estados RNG possíveis:
+<b>${frames}</b>
+`
+
+document.getElementById("resultado").innerHTML=resultado
+document.getElementById("tabela").innerHTML=tabela
+document.getElementById("alvo").innerHTML=alvoHTML
 
 }
 
